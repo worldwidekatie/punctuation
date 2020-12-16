@@ -95,12 +95,12 @@ for i, sentence in enumerate(sentences):
     y[i, word_int[next_words[i]]] = 1
 
 # Early Stopping Requirements
-stop = EarlyStopping(monitor='loss', min_delta=0.05, patience=1, mode='auto')
+stop = EarlyStopping(monitor='loss', min_delta=0.05, patience=2, mode='auto')
 
 # Build Model
 model = Sequential()
 model.add(LSTM(300, input_shape=(maxlen, len(words))))
-model.add(Dense(600, activation='relu'))
+model.add(Dense(900, activation='relu'))
 model.add(Dense(len(words), activation='softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='adamax')

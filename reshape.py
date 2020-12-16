@@ -2,17 +2,11 @@
 
 import json
 
-
-# characters = {}
-# with open('movie-chat/movie_characters_metadata.txt', 'r', encoding='iso-8859-1') as chars:
-#   for char in chars:
-#       characters[char.split(' +++$+++ ')[0]] = char.split(' +++$+++ ')[1] + ": "
-
 lines = {}
 with open('movie-chat/movie_lines.txt', 'r', encoding='iso-8859-1') as f:
     for line in f.readlines():
         lines[line.split(' +++$+++ ')[0]] = line.split(' +++$+++ ')[-1]
-#         #lines[line.split(' +++$+++ ')[0]] = characters[line.split(' +++$+++ ')[1]] + line.split(' +++$+++ ')[-1]
+
        
 dialogues = ""
 convos = []
@@ -38,9 +32,3 @@ tfile.close()
 tfile = open('val.txt', 'a')
 tfile.write(dialogues2)
 tfile.close()
-# lines = []
-# with open('dialogues.txt', 'r', encoding='iso-8859-1') as dialogues:
-#     for line in dialogues:
-#         lines.append(line)
-
-# print(lines[:10])
