@@ -16,15 +16,19 @@ import re
 
 
 
+# Bring in the data. Right now I'm just doing train. Will add validate later.
 lines = ""
 with open('train.txt', 'r', encoding='iso-8859-1') as dialogues:
     for line in dialogues:
         lines += line
 
+
+# Original words will be the y. They retain punctuation and capitalization.
 orig_words = lines.replace("\n", " \n ").replace(" -", "-").split(" ")
 orig_words =  list(filter(lambda a: a != '', orig_words))
 
 
+# New words will be the X. They don't have capitalization and punctuation.
 new_words = []
 for word in orig_words:
     w = re.sub(r'[^\w\s]','',word) #remove everything except words, space
@@ -32,7 +36,7 @@ for word in orig_words:
     new_words.append(w.lower())
 
 
-# Encode the data as words
+# Create Encoder/Decoder
 text = orig_words + new_words
 text.append('')
 
@@ -40,7 +44,8 @@ words = sorted(list(set(text)))
 word_int = dict((c, i) for i, c in enumerate(words))
 int_word = dict((i, c) for i, c in enumerate(words))
 
-# Create the Sequence Data
+
+# Create the X and y more formally.
 maxlen = 11
 
 sentences = [] #X
@@ -50,6 +55,9 @@ maxlen = 11
 contexts = []
 preds = []
 
+
+# This creates chunks that are 11 tokens long with the 
+# middle token being the target word. 
 for i in range(len(orig_words)):
     if i == 0:
         x1 = [''] * 5
@@ -108,7 +116,7 @@ model.compile(loss='categorical_crossentropy', optimizer='adamax')
 # Fit Model
 model.fit(x, y,
         batch_size=32,
-        epochs=5, 
+        epochs=200, 
         callbacks=[stop])
 
 # Save Model
@@ -117,6 +125,14 @@ model.save(f'punctuation')
 
 
 def gen_data(sentences):
+    """A function to generate predictions for the sixth word
+        of every chunk in sentences and then returns them
+        as a list of words."""
+
+    # With more time I would refine it to make it able to handle one
+    # large string that's a whole document and then return the whole
+    # document with capitalization and punctuation fixed.
+
     data = []
     for sentence in sentences:
         senten = sentence.split(" ")
@@ -128,6 +144,7 @@ def gen_data(sentences):
 
     return data
 
-
+# This is just an example of a few chunks whose sixth words
+# make at least part of a sentence.
 sentences = ['thats the kind of guy she likes pretty ones \n who', 'the kind of guy she likes pretty ones \n who knows', 'kind of guy she likes pretty ones \n who knows all', 'of guy she likes pretty ones \n who knows all ive', 'guy she likes pretty ones \n who knows all ive ever', 'she likes pretty ones \n who knows all ive ever heard', 'likes pretty ones \n who knows all ive ever heard her', 'pretty ones \n who knows all ive ever heard her say', 'ones \n who knows all ive ever heard her say is', '\n who knows all ive ever heard her say is that']
 print(gen_data(sentences))
