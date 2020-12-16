@@ -47,13 +47,8 @@ int_word = dict((i, c) for i, c in enumerate(words))
 
 # Create the X and y more formally.
 maxlen = 11
-
 sentences = [] #X
-next_words = [] #Y
-
-maxlen = 11
-contexts = []
-preds = []
+preds = [] #Y
 
 
 # This creates chunks that are 11 tokens long with the 
@@ -64,43 +59,40 @@ for i in range(len(orig_words)):
         x2 = [new_words[0]]
         x3 = new_words[1:6]
         sentences.append(x1 + x2 + x3)
-        next_words.append(orig_words[i])
+        preds.append(orig_words[i])
     
     elif i < 5:
         x1 = [''] * (5-i)
         x2 = new_words[:i]
         x3 = new_words[i: i+6]
         sentences.append(x1 + x2 + x3)
-        next_words.append(orig_words[i])
+        preds.append(orig_words[i])
 
     elif i == len(orig_words):
         x1 = new_words[i-5:]
         x2 = [''] * 5
         sentences.append(x1 + x2)
-        next_words.append(orig_words[i])
+        preds.append(orig_words[i])
 
     elif i > len(orig_words) - 6:
         x1 = new_words[i-5:]
         x2 = [''] * (6 - (len(orig_words) - i))
         sentences.append(x1 + x2)
-        next_words.append(orig_words[i])
+        preds.append(orig_words[i])
     
     else:
         sentences.append(new_words[i-5: i+6])
-        next_words.append(orig_words[i])
+        preds.append(orig_words[i])
 
-for i in range(0, len(text)- maxlen):
-    sentences.append(text[i: i + maxlen])
-    next_words.append(text[i + maxlen])
 
-# Specify X and y
+# Make x and y computer readable.
 x = np.zeros((len(sentences), maxlen, len(words)), dtype=np.bool)
 y = np.zeros((len(sentences), len(words)), dtype=np.bool)
 
 for i, sentence in enumerate(sentences):
     for t, word in enumerate(sentence):
         x[i, t, word_int[word]] = 1
-    y[i, word_int[next_words[i]]] = 1
+    y[i, word_int[preds[i]]] = 1
 
 # Early Stopping Requirements
 stop = EarlyStopping(monitor='loss', min_delta=0.05, patience=2, mode='auto')
@@ -115,8 +107,8 @@ model.compile(loss='categorical_crossentropy', optimizer='adamax')
 
 # Fit Model
 model.fit(x, y,
-        batch_size=32,
-        epochs=200, 
+        batch_size=100,
+        epochs=5, 
         callbacks=[stop])
 
 # Save Model
