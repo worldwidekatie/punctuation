@@ -107,8 +107,8 @@ model.compile(loss='categorical_crossentropy', optimizer='adamax')
 
 # Fit Model
 model.fit(x, y,
-        batch_size=100,
-        epochs=5, 
+        batch_size=32,
+        epochs=200, 
         callbacks=[stop])
 
 # Save Model
