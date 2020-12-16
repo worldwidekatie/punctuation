@@ -1,2 +1,2 @@
-# punctuation
-Architecture for a neural net that does capitalization and punctuation.
+# Capitalization and Punctuation
+Architecture prototype for an LSTM that does capitalization and punctuation.
